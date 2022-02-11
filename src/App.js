@@ -1,23 +1,32 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import SearchForm from './components/SearchForm';
+import UserCardList from './components/UserCardList';
+
 
 function App() {
+  
+  const [users, setUsers] = useState([])
+
+  const getUser = (userName) => {
+    let params = encodeURIComponent(`${userName}`);
+    let uri = `https://api.github.com/users/${params}`
+    fetch(uri)
+      .then(resp => resp.json())
+      .then(json => {
+        let newUser = {
+          name: json.name,
+          avatar: json.avatar_url,
+          bio: json.bio
+        }
+        setUsers([...users, {...newUser}])
+      })
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <SearchForm getUser={getUser}/>
+      <UserCardList users={users} />
     </div>
   );
 }
